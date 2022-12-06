@@ -6,6 +6,13 @@ import mysql.connector
 class DBManager:
     def __init__(self, database='example', host="db", user="root", password_file=None):
         pf = open(password_file, 'r')
+
+        self.user = user
+        self.password = pf.read()
+        self.host = host
+        self.database = database
+
+
         self.connection = mysql.connector.connect(
             user=user, 
             password=pf.read(),
@@ -14,7 +21,7 @@ class DBManager:
             auth_plugin='mysql_native_password'
         )
         pf.close()
-        self.connection.autocommit = True
+        # self.connection.autocommit = True
         self.cursor = self.connection.cursor(buffered=True)
 
     
@@ -25,7 +32,15 @@ class DBManager:
         self.connection.commit()
     
     def query_titles(self):
-        cursor = self.connection.cursor()
+        connection = mysql.connector.connect(
+            user=self.user, 
+            password=self.password,
+            host=self.host, # name of the mysql service as set in the docker compose file
+            database=self.database,
+            auth_plugin='mysql_native_password'
+        )
+        connection.autocommit = True
+        cursor = connection.cursor()
         cursor.execute('SELECT title, id FROM blog')
         rec = []
         for c in cursor.fetchall():
