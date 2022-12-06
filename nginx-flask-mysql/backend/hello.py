@@ -25,9 +25,10 @@ class DBManager:
         self.connection.commit()
     
     def query_titles(self):
-        self.cursor.execute('SELECT title, id FROM blog')
+        cursor = self.connection.cursor()
+        cursor.execute('SELECT title, id FROM blog')
         rec = []
-        for c in self.cursor.fetchall():
+        for c in cursor.fetchall():
             # if c[1] == 1:
             #     try:
             #         count = int(c[0].split(':')[1]) + 1
@@ -38,7 +39,7 @@ class DBManager:
                 count = int(c[0].split(':')[1]) + 1
             except:
                 count = 1
-            self.cursor.execute(f"UPDATE blog set title='Blog post #{c[1]}. Reads:{count}' WHERE id={c[1]}")
+            cursor.execute(f"UPDATE blog set title='Blog post #{c[1]}. Reads:{count}' WHERE id={c[1]}")
 
         
         return rec
