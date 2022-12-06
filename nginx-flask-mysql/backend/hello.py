@@ -15,7 +15,7 @@ class DBManager:
 
         self.connection = mysql.connector.connect(
             user=user, 
-            password=pf.read(),
+            password=self.password,
             host=host, # name of the mysql service as set in the docker compose file
             database=database,
             auth_plugin='mysql_native_password'
