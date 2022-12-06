@@ -14,7 +14,9 @@ class DBManager:
             auth_plugin='mysql_native_password'
         )
         pf.close()
-        self.cursor = self.connection.cursor()
+        self.connection.autocommit = True
+        self.cursor = self.connection.cursor(buffered=True)
+
     
     def populate_db(self):
         self.cursor.execute('DROP TABLE IF EXISTS blog')
@@ -23,10 +25,22 @@ class DBManager:
         self.connection.commit()
     
     def query_titles(self):
-        self.cursor.execute('SELECT title FROM blog')
+        self.cursor.execute('SELECT title, id FROM blog')
         rec = []
-        for c in self.cursor:
+        for c in self.cursor.fetchall():
+            # if c[1] == 1:
+            #     try:
+            #         count = int(c[0].split(':')[1]) + 1
+            #     except:
+            #         count = 1
             rec.append(c[0])
+            try:
+                count = int(c[0].split(':')[1]) + 1
+            except:
+                count = 1
+            self.cursor.execute(f"UPDATE blog set title='Blog post #{c[1]}. Reads:{count}' WHERE id={c[1]}")
+
+        
         return rec
 
 
